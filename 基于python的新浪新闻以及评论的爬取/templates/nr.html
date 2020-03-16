@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{news[0]}}</title>
+</head>
+<body>
+<dl>
+    <dt>
+        <font face="华文宋体"size="5" color="black">
+            <a href="http://127.0.0.1:5000">主页</a><br>
+            <font face="黑体" size="6">
+            新闻<br>
+            <hr size="3" >
+            </font>
+            标题:{{news[0]}}<br>
+            时间:{{news[1]}}<br>
+            内容:<br>
+            {{news[2]}}<br>
+            <font face="黑体" size="6">
+            评论<br>
+            <hr size="3" >
+            </font>
+            {% for pl in pls %}
+            {% if pl[0]==None %}
+               内容:{{pl[3]}}<br>
+            {% else %}
+               用户名:{{pl[0]}}<br>
+               时  间:{{pl[1]}}<br>
+               点赞数:{{pl[2]}}<br>
+               内  容:{{pl[3]}}<br>
+               <hr size="3" >
+            {% endif %}
+            {% endfor %}
+        </font>
+    </dt>
+</dl>
+</body>
+</html>

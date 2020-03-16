@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新闻</title>
+</head>
+<body>
+<dl>
+    <dt>
+        <font face="华文宋体"size="8">
+            财经新闻
+        </font>
+    </dt>
+    <dd>
+        {% for cjnew in cjnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{cjnew[1]}}">{{cjnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            国际新闻
+        </font>
+    </dt>
+    <dd>
+        {% for gjnew in gjnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{gjnew[1]}}">{{gjnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            国内新闻
+        </font>
+    </dt>
+    <dd>
+        {% for gnnew in gnnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{gnnew[1]}}">{{gnnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            军事新闻
+        </font>
+    </dt>
+    <dd>
+        {% for jsnew in jsnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{jsnew[1]}}">{{jsnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            教育新闻
+        </font>
+    </dt>
+    <dd>
+        {% for jynew in jynews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{jynew[1]}}">{{jynew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            科技新闻
+        </font>
+    </dt>
+    <dd>
+        {% for kjnew in kjnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{kjnew[1]}}">{{kjnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            体育新闻
+        </font>
+    </dt>
+    <dd>
+        {% for tynew in tynews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{tynew[1]}}">{{tynew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            娱乐新闻
+        </font>
+    </dt>
+    <dd>
+        {% for ylnew in ylnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{ylnew[1]}}">{{ylnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+    <dt>
+        <font face="华文宋体"size="8">
+            世相
+        </font>
+    </dt>
+    <dd>
+        {% for sxnew in sxnews %}
+        <font face="华文宋体" size="5" color="black">
+         <a href="http://127.0.0.1:5000/nr/{{sxnew[1]}}">{{sxnew[0]}}</a> <br>
+        </font>
+        {% endfor %}
+    </dd>
+    <hr size="3" >
+</dl>
+</body>
+</html>
