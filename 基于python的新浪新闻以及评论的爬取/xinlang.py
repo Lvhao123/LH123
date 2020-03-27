@@ -4,9 +4,11 @@
 from urllib.request import urlopen
 from selenium import webdriver
 from bs4 import BeautifulSoup
+import threading
 import datetime
 import pymysql
 import shutil
+import requests
 import time
 import json
 import os
@@ -17,6 +19,9 @@ news={}
 xttime=datetime.datetime.now().strftime('%Y-%m-%d %H')#获取系统当前时间
 min=datetime.datetime.now().strftime('%M')
 x="该页面没有内容"
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
+}
 
 ##爬取评论
 def pinglun(url,sqlid):
@@ -109,8 +114,9 @@ def guoneixinwen():
         os.remove(save_url)
     except FileNotFoundError:
         print("没有该文件")
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl,headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
+    time.sleep(3)
     titles=[]
     gnnews = {}
     gnurls = []
@@ -127,8 +133,8 @@ def guoneixinwen():
         title=titles[n]
         n += 1
         sqlid="gn" + "-" + (str)(n)
-        html = urlopen(gnurl)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(gnurl,headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         gnnews["国内新闻"].setdefault(n, {})
         gnnews["国内新闻"][n].setdefault("标题", title.strip())
         try:
@@ -152,6 +158,8 @@ def guoneixinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(gnurl,sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url,'w') as f_obj:
@@ -166,8 +174,9 @@ def guojixinwen():
         os.remove(save_url)
     except FileNotFoundError:
         print("没有该文件")
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl,headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
+    time.sleep(3)
     titles=[]
     gjnews = {}
     gjurls = []
@@ -184,8 +193,8 @@ def guojixinwen():
         title=titles[m]
         m += 1
         sqlid = "gj" + "-" + (str)(m)
-        html = urlopen(gjurl)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(gjurl, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         #gjnews.setdefault("国际新闻", {})
         gjnews["国际新闻"].setdefault(m, {})
         gjnews["国际新闻"][m].setdefault("标题", title.strip())
@@ -210,6 +219,8 @@ def guojixinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(gjurl, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url,'w') as f_obj:
@@ -224,8 +235,9 @@ def junshixinwen():
         os.remove(save_url)
     except FileNotFoundError:
         print("没有该文件")
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl, headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
+    time.sleep(3)
     titles=[]
     jsnews = {}
     jsurls = []
@@ -242,8 +254,8 @@ def junshixinwen():
         title=titles[m]
         m += 1
         sqlid="js" + "-" +(str)(m)
-        html = urlopen(jsurl)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(jsurl, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         #jsnews.setdefault("军事新闻", {})
         jsnews["军事新闻"].setdefault(m, {})
         jsnews["军事新闻"][m].setdefault("标题", title.strip())
@@ -267,6 +279,8 @@ def junshixinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(jsurl, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url,'w') as f_obj:
@@ -283,8 +297,9 @@ def tiyuxinwen():
         print("没有该文件")
     tynews={}
     #tynews.setdefault("体育新闻", {})
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl, headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
+    time.sleep(3)
     name_lq = bsObj.find("div", {"id": {"blk_tyxwlqup_01"}}).find("a").get_text()
     name_gjzt = bsObj.find("div", id="blk_tyxwgjztup_01").find("a").get_text()
     name_gnzt = bsObj.find("div",id="blk_tyxwgnztup_01").find("a").get_text()
@@ -307,8 +322,8 @@ def tiyuxinwen():
         title=titles[m]
         m += 1
         sqlid = "tylq" + "-" + (str)(m)
-        html=urlopen(tyurl_lq)
-        bsObj=BeautifulSoup(html,"html.parser")
+        html = requests.get(tyurl_lq, headers=headers)
+        bsObj = BeautifulSoup(html.content,"html.parser")
         #tynews["体育新闻"].setdefault("篮球",{})
         tynews["体育新闻"][name_lq].setdefault(m,{})
         tynews["体育新闻"][name_lq][m].setdefault("标题",title.strip())
@@ -332,6 +347,8 @@ def tiyuxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(tyurl_lq, sqlid)
+        html.close()
+        time.sleep(3)
     ##国际足坛
     m = 0
     titles=[]
@@ -347,8 +364,8 @@ def tiyuxinwen():
         title=titles[m]
         m += 1
         sqlid = "tygjzt" + "-" + (str)(m)
-        html=urlopen(tyurl_gjzt)
-        bsObj=BeautifulSoup(html,"html.parser")
+        html = requests.get(tyurl_gjzt, headers=headers)
+        bsObj=BeautifulSoup(html.content,"html.parser")
         tynews["体育新闻"][name_gjzt].setdefault(m,{})
         tynews["体育新闻"][name_gjzt][m].setdefault("标题",title.strip())
         try:
@@ -374,6 +391,8 @@ def tiyuxinwen():
             pinglun(tyurl_gjzt, sqlid)
         except pymysql.err.ProgrammingError:
             continue
+        html.close()
+        time.sleep(3)
     ##国内足坛
     m = 0
     titles=[]
@@ -388,8 +407,8 @@ def tiyuxinwen():
         title=titles[m]
         m += 1
         sqlid = "tygnzt" + "-" + (str)(m)
-        html=urlopen(tyurl_gnzt)
-        bsObj=BeautifulSoup(html,"html.parser")
+        html = requests.get(tyurl_gnzt, headers=headers)
+        bsObj = BeautifulSoup(html.content,"html.parser")
         tynews["体育新闻"].setdefault(name_gnzt,{})
         tynews["体育新闻"][name_gnzt].setdefault(m,{})
         tynews["体育新闻"][name_gnzt][m].setdefault("标题",title.strip())
@@ -413,6 +432,8 @@ def tiyuxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(tyurl_gnzt, sqlid)
+        html.close()
+        time.sleep(3)
     #综合体育
     m = 0
     titles=[]
@@ -427,8 +448,8 @@ def tiyuxinwen():
         title=titles[m]
         m += 1
         sqlid = "tyzhty" + "-" + (str)(m)
-        html=urlopen(tyurl_zhty)
-        bsObj=BeautifulSoup(html,"html.parser")
+        html = requests.get(tyurl_zhty, headers=headers)
+        bsObj=BeautifulSoup(html.content,"html.parser")
         tynews["体育新闻"].setdefault(name_zhty,{})
         tynews["体育新闻"][name_zhty].setdefault(m,{})
         tynews["体育新闻"][name_zhty][m].setdefault("标题",title.strip())
@@ -451,6 +472,8 @@ def tiyuxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(tyurl_zhty, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url,'w') as f_obj:
@@ -466,8 +489,9 @@ def caijingxinwen():
     except FileNotFoundError:
         print("没有该文件")
     cjnews = {}
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl, headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
+    time.sleep(3)
     name_zh=bsObj.find("div",id="blk_cjtltop_01").find("a",class_="titName ptn_31").get_text()
     name_gngjcj=bsObj.find("div",id="blk_cjxwgngjcjup_01").find("div",class_="t_name").get_text()
     name_gp=bsObj.find("div",id="blk_cjxwgpggmgup_01").find("div",class_="t_name").get_text()
@@ -491,8 +515,8 @@ def caijingxinwen():
         title=titles[m]
         m += 1
         sqlid = "cjgngjcj" + "-" + (str)(m)
-        html=urlopen(cjurl_gngjcj)
-        bsObj=BeautifulSoup(html,"html.parser")
+        html = requests.get(cjurl_gngjcj, headers=headers)
+        bsObj=BeautifulSoup(html.content,"html.parser")
         cjnews[name_zh][name_gngjcj].setdefault(m,{})
         cjnews[name_zh][name_gngjcj][m].setdefault("标题",title.strip())
         try:
@@ -515,6 +539,8 @@ def caijingxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(cjurl_gngjcj, sqlid)
+        html.close()
+        time.sleep(3)
     ##股票
     m = 0
     titles=[]
@@ -529,8 +555,8 @@ def caijingxinwen():
         title=titles[m]
         m += 1
         sqlid = "cjgp" + "-" + (str)(m)
-        html = urlopen(cjurl_gp)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(cjurl_gp, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         cjnews[name_zh][name_gp].setdefault(m, {})
         cjnews[name_zh][name_gp][m].setdefault("标题", title.strip())
         try:
@@ -553,6 +579,8 @@ def caijingxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(cjurl_gp, sqlid)
+        html.close()
+        time.sleep(3)
     ##理财
     m = 0
     titles=[]
@@ -567,8 +595,8 @@ def caijingxinwen():
         title=titles[m]
         m += 1
         sqlid = "cjlc" + "-" + (str)(m)
-        html = urlopen(cjurl_lc)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(cjurl_lc, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         cjnews[name_zh][name_lc].setdefault(m, {})
         cjnews[name_zh][name_lc][m].setdefault("标题", title.strip())
         try:
@@ -591,6 +619,8 @@ def caijingxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(cjurl_lc, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url,'w') as f_obj:
@@ -696,7 +726,7 @@ def kejixinwen():
     with open(save_url,'w') as f_obj:
         json.dump(kjnews,f_obj)
 
- ##教育新闻
+##教育新闻
 def jiaoyuxinwen():
     db = pymysql.connect("localhost", "root", "973249", "news")
     cursor = db.cursor()  ##使用cursor方法创建一个光标对象
@@ -706,8 +736,8 @@ def jiaoyuxinwen():
         os.remove(save_url)
     except FileNotFoundError:
         print("没有该文件")
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl, headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
     jynews={}
     name=bsObj.find("div",id="blk_jytltop_01").find("a",class_="titName ptn_39").get_text()
     jynews.setdefault(name,{})
@@ -731,8 +761,8 @@ def jiaoyuxinwen():
         m+=1
         sqlid = "jy" + "-" +(str)(m)
         essay_jy=""
-        html=urlopen(url)
-        bsObj=BeautifulSoup(html,"html.parser")
+        html = requests.get(url, headers=headers)
+        bsObj = BeautifulSoup(html.content,"html.parser")
         jynews[name].setdefault(m,{})
         jynews[name][m].setdefault("标题",title.strip())
         try:
@@ -755,6 +785,8 @@ def jiaoyuxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(url, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url, 'w') as f_obj:
@@ -771,8 +803,9 @@ def yulexinwen():
     except FileNotFoundError:
         print("没有该文件")
     ylnews = {}
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl, headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
+    time.sleep(3)
     name_zh=bsObj.find("div",id="blk_yltltop_01").find("a",class_="titName ptn_44").get_text()
     name_mxbg=bsObj.find("div",id="blk_ylxwmxbgup_01").find("div",class_="t_name").get_text()
     name_dyds=bsObj.find("div",id="blk_ylxwrmysup_01").find("div",class_="t_name").get_text()
@@ -796,8 +829,8 @@ def yulexinwen():
         title = titles[m]
         m += 1
         sqlid = "ylmxbg" + "-" + (str)(m)
-        html = urlopen(ylurl_mxbg)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(ylurl_mxbg, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         ylnews[name_zh][name_mxbg].setdefault(m, {})
         ylnews[name_zh][name_mxbg][m].setdefault("标题", title.strip())
         try:
@@ -820,6 +853,8 @@ def yulexinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(ylurl_mxbg, sqlid)
+        html.close()
+        time.sleep(3)
     ##电影电视
     m = 0
     titles = []
@@ -836,8 +871,8 @@ def yulexinwen():
         title = titles[m]
         m += 1
         sqlid = "yldyds" + "-" + (str)(m)
-        html = urlopen(ylurl_dyds)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(ylurl_dyds, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         ylnews[name_zh][name_dyds].setdefault(m, {})
         ylnews[name_zh][name_dyds][m].setdefault("标题", title.strip())
         try:
@@ -860,6 +895,8 @@ def yulexinwen():
         cursor.execute("insert into new(id,newtype,newtitle,newdate,newnr) values('" + sqlid + "','yldyds','" + title + "','" + date_dyds + "','" + ylessay_dyds + "')")
         db.commit()
         pinglun(ylurl_dyds, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url, 'w') as f_obj:
@@ -875,8 +912,8 @@ def shixiangxinwen():
         os.remove(save_url)
     except FileNotFoundError:
         print("没有该文件")
-    html = urlopen(baseurl)
-    bsObj = BeautifulSoup(html, "html.parser")
+    html = requests.get(baseurl, headers=headers)
+    bsObj = BeautifulSoup(html.content, "html.parser")
     sxnews={}
     name=bsObj.find("div",id="blk_shtltop_01").find("a",class_="titName ptn_47").get_text()
     sxnews.setdefault(name,{})
@@ -893,8 +930,8 @@ def shixiangxinwen():
         m+=1
         sqlid = "sx" + "-" + (str)(m)
         essay_sx=""
-        html = urlopen(url)
-        bsObj = BeautifulSoup(html, "html.parser")
+        html = requests.get(url, headers=headers)
+        bsObj = BeautifulSoup(html.content, "html.parser")
         sxnews[name].setdefault(m, {})
         sxnews[name][m].setdefault("标题", title.strip())
         try:
@@ -917,19 +954,36 @@ def shixiangxinwen():
         cursor.execute(sql)
         db.commit()
         pinglun(url, sqlid)
+        html.close()
+        time.sleep(3)
     cursor.close()
     db.close()
     with open(save_url, 'w') as f_obj:
         json.dump(sxnews, f_obj)
 
-creatdir()
-dbconnect()
-guoneixinwen()
-guojixinwen()
-junshixinwen()
-tiyuxinwen()
-caijingxinwen()
-kejixinwen()
-jiaoyuxinwen()
-yulexinwen()
-shixiangxinwen()
+
+def main():
+    creatdir()
+    dbconnect()
+    t_guonei = threading.Thread(target=guoneixinwen)
+    t_guoji = threading.Thread(target=guojixinwen)
+    t_junshi = threading.Thread(target=junshixinwen)
+    t_tiyu = threading.Thread(target=tiyuxinwen)
+    t_caijing = threading.Thread(target=caijingxinwen)
+    t_keji = threading.Thread(target=kejixinwen)
+    t_jiaoyu = threading.Thread(target=jiaoyuxinwen)
+    t_yule = threading.Thread(target=yulexinwen)
+    t_shixiang = threading.Thread(target=shixiangxinwen)
+
+    t_guonei.start()
+    t_guoji.start()
+    t_junshi.start()
+    t_tiyu.start()
+    t_caijing.start()
+    t_keji.start()
+    t_jiaoyu.start()
+    t_yule.start()
+    t_shixiang.start()
+
+if __name__ == '__main__':
+    main()
